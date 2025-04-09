@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../viewmodels/task_viewmodel.dart';
+import '../l10n/app_localizations.dart';
+import 'package:intl/intl.dart'; // Thêm để định dạng ngày tháng theo ngôn ngữ
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -31,11 +33,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Calendar',
-          style: TextStyle(
+        title: Text(
+          l10n.translate('calendar'),
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.blue,
@@ -70,7 +73,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 onPageChanged: (focusedDay) {
                   _focusedDay = focusedDay;
                 },
+                locale: l10n.locale.languageCode, // Đặt ngôn ngữ cho lịch
+                headerStyle: HeaderStyle(
+                  titleTextFormatter: (date, locale) {
+                    // Tùy chỉnh tiêu đề tháng và năm
+                    return DateFormat.yMMMM(locale).format(date);
+                  },
+                  formatButtonVisible: false,
+                  titleCentered: true,
+                ),
                 calendarBuilders: CalendarBuilders(
+                  dowBuilder: (context, day) {
+                    // Tùy chỉnh nhãn ngày trong tuần (Mon, Tue, ...)
+                    final text = DateFormat.E(l10n.locale.languageCode).format(day);
+                    return Center(
+                      child: Text(
+                        text,
+                        style: const TextStyle(color: Colors.blue),
+                      ),
+                    );
+                  },
                   markerBuilder: (context, date, events) {
                     final tasks = viewModel.getTasksForDay(date);
                     if (tasks.isNotEmpty) {
@@ -95,10 +117,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
               Expanded(
                 child: _selectedDay != null
                     ? _buildTaskList(viewModel, _selectedDay!)
-                    : const Center(
+                    : Center(
                         child: Text(
-                          'Select a day to view tasks',
-                          style: TextStyle(fontSize: 16),
+                          l10n.translate('select_day_to_view_tasks'),
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
               ),
@@ -110,12 +132,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildTaskList(TaskViewModel viewModel, DateTime selectedDay) {
+    final l10n = AppLocalizations.of(context);
     final tasks = viewModel.getTasksForDay(selectedDay);
     if (tasks.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'No tasks for this day',
-          style: TextStyle(fontSize: 16),
+          l10n.translate('no_tasks_for_this_day'),
+          style: const TextStyle(fontSize: 16),
         ),
       );
     }
@@ -128,20 +151,59 @@ class _CalendarScreenState extends State<CalendarScreen> {
           margin: const EdgeInsets.only(bottom: 8),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  task.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        task.description,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  task.description,
-                  style: const TextStyle(fontSize: 14),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(l10n.translate('delete_task')),
+                        content: Text(l10n.translate('delete_task_confirm')),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(l10n.translate('cancel')),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              viewModel.deleteTask(task.id);
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.translate('task_deleted'))),
+                              );
+                            },
+                            child: Text(
+                              l10n.translate('delete'),
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

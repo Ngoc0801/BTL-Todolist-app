@@ -29,6 +29,12 @@ class TaskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteTask(int id) async {
+    await _dbHelper.deleteTask(id);
+    _tasks.removeWhere((task) => task.id == id);
+    notifyListeners();
+  }
+
   List<Task> getTasksForDay(DateTime day) {
     return _tasks.where((task) {
       return task.date.year == day.year &&

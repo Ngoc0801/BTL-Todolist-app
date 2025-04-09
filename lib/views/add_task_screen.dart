@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/task.dart';
 import '../viewmodels/task_viewmodel.dart';
+import '../l10n/app_localizations.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -38,6 +39,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -56,9 +58,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             Navigator.pop(context);
           },
         ),
-        title: const Text(
-          'Add New',
-          style: TextStyle(
+        title: Text(
+          l10n.translate('add_new'),
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -74,9 +76,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Task',
-                style: TextStyle(
+              Text(
+                l10n.translate('task'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -85,7 +87,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               TextField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  hintText: 'Do homework',
+                  hintText: l10n.translate('task'),
                   filled: true,
                   fillColor: Theme.of(context).cardTheme.color ?? Colors.white,
                   border: OutlineInputBorder(
@@ -103,9 +105,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Description',
-                style: TextStyle(
+              Text(
+                l10n.translate('description'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -114,7 +116,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               TextField(
                 controller: _descriptionController,
                 decoration: InputDecoration(
-                  hintText: "Don't give up",
+                  hintText: l10n.translate('description'),
                   filled: true,
                   fillColor: Theme.of(context).cardTheme.color ?? Colors.white,
                   border: OutlineInputBorder(
@@ -133,9 +135,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Date',
-                style: TextStyle(
+              Text(
+                l10n.translate('date'),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -151,7 +153,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                   child: Text(
                     _selectedDate == null
-                        ? 'Select Date'
+                        ? l10n.translate('select_date')
                         : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
                     style: TextStyle(
                       fontSize: 16,
@@ -179,8 +181,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please fill in all fields and select a date!'),
+                        SnackBar(
+                          content: Text(l10n.translate('fill_all_fields')),
                         ),
                       );
                     }
@@ -196,9 +198,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       vertical: 12,
                     ),
                   ),
-                  child: const Text(
-                    'Add',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.translate('add'),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                     ),

@@ -6,9 +6,12 @@ import 'add_task_screen.dart';
 import 'calendar_screen.dart';
 import 'documents_screen.dart';
 import 'settings_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class TaskListScreen extends StatefulWidget {
-  const TaskListScreen({super.key});
+  final Function(Locale) onLocaleChange; // Thêm callback để thay đổi ngôn ngữ
+
+  const TaskListScreen({super.key, required this.onLocaleChange});
 
   @override
   _TaskListScreenState createState() => _TaskListScreenState();
@@ -17,12 +20,18 @@ class TaskListScreen extends StatefulWidget {
 class _TaskListScreenState extends State<TaskListScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    const TaskListScreenContent(),
-    const CalendarScreen(),
-    const DocumentsScreen(),
-    const SettingsScreen(),
-  ];
+  late List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const TaskListScreenContent(),
+      const CalendarScreen(),
+      const DocumentsScreen(),
+      SettingsScreen(onLocaleChange: widget.onLocaleChange), // Truyền callback cho SettingsScreen
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -105,6 +114,7 @@ class TaskListScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -116,9 +126,9 @@ class TaskListScreenContent extends StatelessWidget {
             fit: BoxFit.contain,
           ),
         ),
-        title: const Text(
-          'List',
-          style: TextStyle(
+        title: Text(
+          l10n.translate('list'),
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.blue,
@@ -150,6 +160,7 @@ class TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     Color backgroundColor;
     switch (task.id % 3) {
       case 0:
@@ -167,20 +178,60 @@ class TaskItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              task.title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    task.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    task.description,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              task.description,
-              style: const TextStyle(fontSize: 14),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text(l10n.translate('delete_task')),
+                    content: Text(l10n.translate('delete_task_confirm')),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(l10n.translate('cancel')),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Provider.of<TaskViewModel>(context, listen: false)
+                              .deleteTask(task.id);
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.translate('task_deleted'))),
+                          );
+                        },
+                        child: Text(
+                          l10n.translate('delete'),
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ],
         ),
