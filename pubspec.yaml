@@ -1,0 +1,28 @@
+name: btl_todolistapp
+description: A new Flutter project.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.17.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.0
+  table_calendar: ^3.0.9
+  # flutter_local_notifications: ^19.0.0 # Cập nhật từ ^17.2.4 lên ^19.0.0
+  overlay_support: ^2.1.0
+  # timezone: ^0.10.0 # Cập nhật từ ^0.9.4 lên ^0.10.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/uth_logo.png
