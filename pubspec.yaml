@@ -13,9 +13,11 @@ dependencies:
     sdk: flutter
   provider: ^6.0.0
   table_calendar: ^3.0.9
-  # flutter_local_notifications: ^19.0.0 # Cập nhật từ ^17.2.4 lên ^19.0.0
   overlay_support: ^2.1.0
+  sqflite: ^2.3.0 
+  path: ^1.8.3    # Để hỗ trợ đường dẫn file
   # timezone: ^0.10.0 # Cập nhật từ ^0.9.4 lên ^0.10.0
+  # flutter_local_notifications: ^19.0.0 # Cập nhật từ ^17.2.4 lên ^19.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
 import '../models/task.dart';
+import '../services/database_helper.dart';
 
 class TaskViewModel extends ChangeNotifier {
-  final List<Task> _tasks = [];
+  List<Task> _tasks = [];
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
   List<Task> get tasks => _tasks;
 
-  void addTask(Task task) {
-    _tasks.add(task);
+  TaskViewModel() {
+    _loadTasks();
+  }
+
+  Future<void> _loadTasks() async {
+    _tasks = await _dbHelper.getAllTasks();
     notifyListeners();
   }
 
-  void clearTasks() {
+  Future<void> addTask(Task task) async {
+    final newTask = await _dbHelper.insertTask(task);
+    _tasks.add(newTask);
+    notifyListeners();
+  }
+
+  Future<void> clearTasks() async {
+    await _dbHelper.deleteAllTasks();
     _tasks.clear();
     notifyListeners();
   }
